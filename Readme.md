@@ -1,3 +1,7 @@
+### I dont own the game on steam, so feel free to release it on workshop under your name if you like.
+
+
+
 # RimWorld ResearchPal - Forkd
 
 [![Version](https://img.shields.io/badge/Rimworld-1.2-green.svg)](http://rimworldgame.com/)
