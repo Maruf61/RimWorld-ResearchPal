@@ -164,7 +164,14 @@ namespace ResearchPal
         }
 
         private void UpdateCurrentResearch() {
-            Find.ResearchManager.currentProj = CurrentResearch();
+            var current = CurrentResearch();
+            if (current == null) {
+                Find.ResearchManager.StopProject(Utils.GetCurrentProject(Find.ResearchManager));
+                return;
+            }
+            
+            
+            Find.ResearchManager.SetCurrentProject(CurrentResearch());
         }
 
         static private void UpdateCurrentResearchS() {
@@ -184,9 +191,9 @@ namespace ResearchPal
             }
             finished.ForEach(n => _queue.Remove(n));
             unavailable.ForEach(n => Remove(n));
-            var cur = Find.ResearchManager.currentProj;
+            var cur = Utils.GetCurrentProject(Find.ResearchManager);
             if (cur != null && cur != CurrentResearch()) {
-                Replace(Find.ResearchManager.currentProj.ResearchNode());
+                Replace(Utils.GetCurrentProject(Find.ResearchManager).ResearchNode());
             }
             UpdateCurrentResearch();
         }
@@ -345,7 +352,8 @@ namespace ResearchPal
                 return;
             }
             var next = CurrentS()?.Research;
-            Find.ResearchManager.currentProj = next;
+            if (next != null)
+                Find.ResearchManager.SetCurrentProject(next);
             if (! Settings.useVanillaResearchFinishedMessage) {
                 Log.Debug(
                     "Send completion letter for {0}, next is {1}",
@@ -730,8 +738,8 @@ namespace ResearchPal
             foreach (var node in new List<ResearchNode>(_instance._queue))
                 if (node.Research.IsFinished)
                     _instance._queue.Remove(node);
-
-            Find.ResearchManager.currentProj = _instance._queue.FirstOrDefault()?.Research;
+            if (_instance._queue.FirstOrDefault()?.Research != null)
+                Find.ResearchManager.SetCurrentProject(_instance._queue.FirstOrDefault()?.Research);
         }
     }
 }

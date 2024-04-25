@@ -1,4 +1,4 @@
-# RimWorld ResearchPal - Forked
+# RimWorld ResearchPal - Forkd
 
 [![Version](https://img.shields.io/badge/Rimworld-1.2-green.svg)](http://rimworldgame.com/)
 [![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-blue.svg)](http://creativecommons.org/licenses/by-nc-sa/4.0/)
@@ -18,7 +18,7 @@ Smooth painless research
 
 - **Group Research by Tech-Level**: Whether or not explicitly separate techs by their tech-levels (neolithic, medival, industrial etc.) (Will result in a MUCH larger and sparser graph, and persumably slower generation). Default is `false`.
 
-## ResearchPal - Forked
+## ResearchPal - Forkd
 
 This mod complete rewrites the ResearchPal's graph layout algorithm. The new algorithm is mainly based on the [Sugiyama's original work](https://ieeexplore.ieee.org/abstract/document/4308636) with some personal tweaks. Since Fluffy said:
 

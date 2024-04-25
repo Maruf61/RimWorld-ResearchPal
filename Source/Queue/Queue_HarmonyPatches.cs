@@ -17,7 +17,7 @@ namespace ResearchPal
             // https://github.com/notfood/RimWorld-ResearchPal/blob/master/Source/Injectors/ResearchManagerPatch.cs
             private static void Prefix( ResearchManager __instance, ref ResearchProjectDef __state )
             {
-                __state = __instance.currentProj;
+                __state = Utils.GetCurrentProject(__instance);
             }
 
             // private static void Postfix( ResearchProjectDef __state )
