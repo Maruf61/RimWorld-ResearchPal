@@ -1,10 +1,13 @@
 ### I dont own the game on steam, so feel free to release it on workshop under your name if you like.
 
+- You can open default research windows by holding shift key now.
+
+
 
 
 # RimWorld ResearchPal - Forkd
 
-[![Version](https://img.shields.io/badge/Rimworld-1.2-green.svg)](http://rimworldgame.com/)
+[![Version](https://img.shields.io/badge/Rimworld-1.5-green.svg)](http://rimworldgame.com/)
 [![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-blue.svg)](http://creativecommons.org/licenses/by-nc-sa/4.0/)
 
 Smooth painless research
