@@ -10,5 +10,13 @@
     <order>50</order>
     <defaultHotKey>F5</defaultHotKey>
   </MainButtonDef>
-
+  <MainButtonDef>
+    <defName>ResearchHidden</defName>
+    <label>research</label>
+    <description>Examine and decide on research projects.</description>
+    <workerClass>MainButtonWorker_ToggleResearchTab</workerClass>
+    <tabWindowClass>MainTabWindow_Research</tabWindowClass>
+    <order>60</order>
+    <buttonVisible>false</buttonVisible>
+  </MainButtonDef>
 </Defs>

@@ -34,6 +34,9 @@ namespace ResearchPal
 
         public static Texture2D SlightlyDarkBackground =
             SolidColorMaterials.NewSolidColorTexture( 0f, 0f, 0f, .1f );
+        
+        public static Texture2D RedBackground =
+            SolidColorMaterials.NewSolidColorTexture( 1f, 0f, 0f, .9f );
 
         public static Texture2D Search =
             ContentFinder<Texture2D>.Get( "Icons/magnifying-glass" );
@@ -60,6 +63,12 @@ namespace ResearchPal
             public static Texture2D End    = ContentFinder<Texture2D>.Get( "Lines/Outline/end" );
             public static Texture2D EW     = ContentFinder<Texture2D>.Get( "Lines/Outline/ew" );
             public static Texture2D NS     = ContentFinder<Texture2D>.Get( "Lines/Outline/ns" );
+        }
+        
+        [DefOf]
+        public static class MainButtonDefOf
+        {
+            public static MainButtonDef ResearchHidden;
         }
     }
 }

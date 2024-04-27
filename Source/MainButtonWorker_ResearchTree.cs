@@ -23,5 +23,9 @@ namespace ResearchPal
                 Queue.DrawLabel( queueRect, Color.white, Color.grey, Queue.NumQueued );
             }
         }
+        public override void Activate()
+        {
+            Find.MainTabsRoot.ToggleTab(Event.current.shift ? Assets.MainButtonDefOf.ResearchHidden : def);
+        }
     }
 }

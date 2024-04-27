@@ -464,7 +464,7 @@ namespace ResearchPal
                     0f,
                     12f,
                     12f )
-               .CenteredOnYIn( canvas );
+               .CenteredOnYIn( canvas.TopHalf() );
 
             var texture = ContentFinder<Texture2D>.Get("UI/Widgets/CloseXSmall");
             return Widgets.ButtonImage(iconRect, texture, false);
@@ -472,6 +472,8 @@ namespace ResearchPal
 
         private void DrawSearchBar( Rect canvas )
         {
+            
+            
             Profiler.Start( "DrawSearchBar" );
             // var iconrect = new Rect(
             //         canvas.xMax - Constants.Margin - 16f,
@@ -483,9 +485,20 @@ namespace ResearchPal
                     canvas.xMin,
                     0f,
                     canvas.width,
-                    30f )
-               .CenteredOnYIn( canvas );
-
+                    Constants.QueueLabelSize )
+               .CenteredOnYIn( canvas.TopHalf() );
+            
+            if (ModLister.AnomalyInstalled &&
+                Widgets.ButtonText(
+                    new Rect(canvas.xMin, Constants.QueueLabelSize + Constants.Margin, canvas.width, Constants.QueueLabelSize).CenteredOnYIn(canvas.BottomHalf()),
+                    "Show Anomaly"))
+            {
+                Find.MainTabsRoot.ToggleTab(Assets.MainButtonDefOf.ResearchHidden);
+                ((MainTabWindow_Research)Assets.MainButtonDefOf.ResearchHidden.TabWindow).CurTab =
+                    ResearchTabDefOf.Anomaly;
+                return;
+            }
+            
             // GUI.DrawTexture( iconRect, Assets.Search );
             if (CancelSearchButton(canvas)) {
                 ResetSearch();

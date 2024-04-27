@@ -122,7 +122,7 @@ namespace ResearchPal
             UpdateCurrentResearch();
             return true;
         }
-
+        
         // S means "static"
         static public bool AppendS(ResearchNode node) {
             var res = _instance.Append(node);
@@ -220,7 +220,13 @@ namespace ResearchPal
             }
             return true;
         }
-
+        static public bool ReplaceAnomaly(ResearchNode node) {
+            if ( CantResearch(node)) {
+                return false;
+            }
+            Find.ResearchManager.SetCurrentProject(node.Research);
+            return true;
+        }
         public void Replace(ResearchNode node) {
             _queue.Clear();
             Append(node);
@@ -233,6 +239,7 @@ namespace ResearchPal
             }
         }
 
+        
         static public void ReplaceS(ResearchNode node) {
             _instance.Replace(node);
             NewUndoState();

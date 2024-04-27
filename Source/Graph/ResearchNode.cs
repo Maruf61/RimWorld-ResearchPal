@@ -600,12 +600,19 @@ namespace ResearchPal
         }
 
         private void DrawNode(bool detailedMode, bool mouseOver) {
-            // TryModifySharedState(painter, mouseOver);
+            
+            if (Research.knowledgeCategory != null)
+            {
+                var re = new Rect(Rect.x - 3, Rect.y - 3, Rect.width + 6, Rect.height + 6);
+                GUI.DrawTexture(re, Assets.RedBackground);
+            }
             HandleTooltips();
 
             DrawBackground(mouseOver);
             DrawProgressBar();
 
+            
+            
             // draw the research label
             if (ShouldGreyOutText())
                 GUI.color = Color.grey;
@@ -617,6 +624,7 @@ namespace ResearchPal
             } else {
                 DrawNodeZoomedOut(mouseOver);
             }
+            
             Text.WordWrap = true;
         }
 
@@ -741,6 +749,23 @@ namespace ResearchPal
                 Messages.Message(ResourceBank.String.FinishedResearch(Research.LabelCap), MessageTypeDefOf.SilentInput, false);
                 Queue.Notify_InstantFinished();
             } else if (!Queue.ContainsS(this)) {
+                if (ModLister.AnomalyInstalled && this.Research.knowledgeCategory != null)
+                {
+                    var pres = this.MissingPrerequisites().FirstOrDefault(x=>x.MissingPrerequisites().Count <= 0);
+                    var selected = this;
+                    if (pres != null)
+                    {
+                        selected = pres;
+                    }
+                    var result = Queue.ReplaceAnomaly(selected);
+                    
+                    Find.MainTabsRoot.ToggleTab(Assets.MainButtonDefOf.ResearchHidden);
+                    ((MainTabWindow_Research)Assets.MainButtonDefOf.ResearchHidden.TabWindow).CurTab =
+                        ResearchTabDefOf.Anomaly;
+                    return result;
+                }
+                
+                
                 if (Event.current.shift) {
                     Queue.AppendS(this);
                 } else if (Event.current.alt) {
