@@ -1,13 +1,15 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ModMetaData>
-  <packageId>VinaLx.ResearchPalForkedDev</packageId>
-  <name>ResearchPal - Forkd (Dev)</name>
-  <author>VinaLx</author>
-  <url>https://github.com/VinaLx/RimWorld-ResearchPal</url>
+  <packageId>Maruf61.ResearchPalForkd</packageId>
+  <name>ResearchPal - Forkd</name>
+  <author>Maruf61</author>
+  <url>https://github.com/Maruf61/RimWorld-ResearchPal</url>
   <supportedVersions>
     <li>1.1</li>
     <li>1.2</li>
     <li>1.3</li>
+    <li>1.4</li>
+    <li>1.5</li>
   </supportedVersions>
   <modDependencies>
     <li>
@@ -20,20 +22,22 @@
   <loadAfter>
     <li>mlie.RemoveIndustrialStuff</li>
   </loadAfter>
-  <description>Forked smooth painless research
+  <description>Towards Even Better Research Management
 # Features
- - Dynamically generated to maximize readability. 
- - Shows research projects, buildings, plants and recipes unlocked by each research project.
- - Projects can be queued, and colonists will automatically start the next project when the current research project completes.
- - Search functionality to quickly find research projects.
+ - Dynamically generate research tree.
+ - Display research projects, buildings, plants and recipes unlocked by each research project.
+ - Fully functioning research queue supporting dragging reordering.
+ - Search research projects by keywords.
 
 # Credits:
   Original mod by Fluffy, Not Food and Skyarkangel
-  Graph layout algorithm, quality of life update and various fixes by VinaLx.
+  1.3 update, graph layout algorithm, quality of life update and various fixes by VinaLx.
   Templarr, Russian translation 
   Suh, Junmin: Korean translation
   rw-chaos, German translation
   53N4, Spanish translation
   Qux, French translation
+  1.4 repackage by NeighMeansNeigh
+  1.5 update by Maruf61
   </description>
 </ModMetaData>

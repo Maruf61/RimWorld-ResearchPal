@@ -8,6 +8,7 @@
         }
     ],
     "after": [
-        "brrainz.harmony"
+        "brrainz.harmony",
+        "mlie.RemoveIndustrialStuff"
     ]
 }

@@ -9,15 +9,15 @@ namespace ResearchPal
 {
     public class HarmonyPatches_Queue
     {
-        [HarmonyPatch( typeof( ResearchManager ), "ResearchPerformed", typeof( float ), typeof( Pawn ) )]
+        [HarmonyPatch(typeof(ResearchManager), "ResearchPerformed", typeof(float), typeof(Pawn))]
         public class ResearchPerformed
         {
             // check if last active project was finished. If so, try start the next project.
             // Thanks to NotFood for this nice simplification, I've adapted his/her code;
             // https://github.com/notfood/RimWorld-ResearchPal/blob/master/Source/Injectors/ResearchManagerPatch.cs
-            private static void Prefix( ResearchManager __instance, ref ResearchProjectDef __state )
+            private static void Prefix(ResearchManager __instance, ref ResearchProjectDef __state)
             {
-                __state = Utils.GetCurrentProject(__instance);
+                __state = __instance.GetProject();
             }
 
             // private static void Postfix( ResearchProjectDef __state )
@@ -31,19 +31,22 @@ namespace ResearchPal
             // }
         }
 
-        [HarmonyPatch( typeof( ResearchManager ), "FinishProject" )]
+        [HarmonyPatch(typeof(ResearchManager), "FinishProject")]
         public class DoCompletionDialog
         {
             // suppress vanilla completion dialog, we never want to show it.
-            private static void Prefix( ref bool doCompletionDialog )
+            private static void Prefix(ref bool doCompletionDialog)
             {
                 doCompletionDialog = doCompletionDialog && Settings.useVanillaResearchFinishedMessage;
             }
 
-            private static void Postfix(ResearchProjectDef proj) {
-                if (proj.IsFinished) {
+            private static void Postfix(ResearchProjectDef proj)
+            {
+                if (proj.IsFinished)
+                {
                     Log.Debug("Patch of FinishProject: {0} finished", proj.label);
                     Queue.TryStartNext(proj);
+                    AnomalyQueue.TryStartNext(proj);
                 }
             }
         }
