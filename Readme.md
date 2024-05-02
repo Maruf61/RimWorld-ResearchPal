@@ -1,4 +1,4 @@
-~~ ### I dont own the game on steam, so feel free to release it on workshop under your name if you like. ~~
+~~### I dont own the game on steam, so feel free to release it on workshop under your name if you like.~~
 
 ### You can download in steam workshop, https://steamcommunity.com/sharedfiles/filedetails/?id=3237079317, LakesideLlama uploaded it to workshop for me 
 
