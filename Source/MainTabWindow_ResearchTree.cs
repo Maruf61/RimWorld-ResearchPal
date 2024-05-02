@@ -164,6 +164,7 @@ namespace ResearchPal
             // clear node availability caches
             ResearchNode.ClearCaches();
             Queue.SanityCheckS();
+            AnomalyQueue.SanityCheckS();
 
             _dragging             = false;
             closeOnClickedOutside = false;
@@ -171,7 +172,8 @@ namespace ResearchPal
 
         private void SetRects()
         {
-            var ymin = TopBarHeight + StandardMargin + SideMargin;
+            var ymin = (TopBarHeight + StandardMargin) * 2 + SideMargin; // NormalQueue + AnomalyQueue
+            
             // tree view rects, have to deal with UIScale and ZoomLevel manually.
             _baseViewRect = new Rect(
                 StandardMargin / Prefs.UIScale, ymin,
@@ -219,7 +221,10 @@ namespace ResearchPal
             );
 
             Tree.Draw( VisibleRect );
-            Queue.DrawLabels( VisibleRect );
+            
+            Queue.DrawLabels( VisibleRect);
+            AnomalyQueue.DrawLabels( VisibleRect);
+            
             HandleLeftoverNodeRelease();
             HandleStopFixedHighlights();
 
@@ -420,7 +425,10 @@ namespace ResearchPal
             var evt = Event.current;
             if (evt.type == EventType.MouseDrag && evt.button == 0) {
                 draggedPosition += evt.delta;
-                Queue.NotifyNodeDraggedS();
+                if (draggedNode.Research.knowledgeCategory != null)
+                    AnomalyQueue.NotifyNodeDraggedS();
+                else
+                    Queue.NotifyNodeDraggedS();
                 evt.Use();
             }
             if (DraggingSource() == Painter.Tree) {
@@ -455,7 +463,16 @@ namespace ResearchPal
             // GUI.DrawTexture( queueRect, Assets.SlightlyDarkBackground );
 
             DrawSearchBar( searchRect.ContractedBy( Constants.Margin ) );
-            Queue.DrawS( queueRect, !_dragging );
+
+            
+            
+            Queue.DrawS( queueRect, draggedNode?.Research?.knowledgeCategory != null  );
+            
+            
+            var queueAnomalyRect = queueRect;
+            queueAnomalyRect.yMin += TopBarHeight + Window.StandardMargin;
+            queueAnomalyRect.yMax += TopBarHeight + Window.StandardMargin;
+            AnomalyQueue.DrawS( queueAnomalyRect, !_dragging );
         }
 
         private bool CancelSearchButton(Rect canvas) {
@@ -464,7 +481,7 @@ namespace ResearchPal
                     0f,
                     12f,
                     12f )
-               .CenteredOnYIn( canvas.TopHalf() );
+               .CenteredOnYIn( canvas );
 
             var texture = ContentFinder<Texture2D>.Get("UI/Widgets/CloseXSmall");
             return Widgets.ButtonImage(iconRect, texture, false);
@@ -486,18 +503,9 @@ namespace ResearchPal
                     0f,
                     canvas.width,
                     Constants.QueueLabelSize )
-               .CenteredOnYIn( canvas.TopHalf() );
+               .CenteredOnYIn( canvas );
             
-            if (ModLister.AnomalyInstalled &&
-                Widgets.ButtonText(
-                    new Rect(canvas.xMin, Constants.QueueLabelSize + Constants.Margin, canvas.width, Constants.QueueLabelSize).CenteredOnYIn(canvas.BottomHalf()),
-                    "Show Anomaly"))
-            {
-                Find.MainTabsRoot.ToggleTab(Assets.MainButtonDefOf.ResearchHidden);
-                ((MainTabWindow_Research)Assets.MainButtonDefOf.ResearchHidden.TabWindow).CurTab =
-                    ResearchTabDefOf.Anomaly;
-                return;
-            }
+            
             
             // GUI.DrawTexture( iconRect, Assets.Search );
             if (CancelSearchButton(canvas)) {

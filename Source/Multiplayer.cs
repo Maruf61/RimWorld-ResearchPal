@@ -28,6 +28,15 @@ namespace ResearchPal
             MP.RegisterSyncMethod(typeof(Queue), nameof(Queue.Undo));
             MP.RegisterSyncMethod(typeof(Queue), nameof(Queue.Redo));
 
+            MP.RegisterSyncMethod(typeof(AnomalyQueue), nameof(AnomalyQueue.AppendS));
+            MP.RegisterSyncMethod(typeof(AnomalyQueue), nameof(AnomalyQueue.PrependS));
+            MP.RegisterSyncMethod(typeof(AnomalyQueue), nameof(AnomalyQueue.ReplaceS));
+            MP.RegisterSyncMethod(typeof(AnomalyQueue), nameof(AnomalyQueue.RemoveS));
+            MP.RegisterSyncMethod(typeof(AnomalyQueue), nameof(AnomalyQueue.Insert));
+            MP.RegisterSyncMethod(typeof(AnomalyQueue), nameof(AnomalyQueue.FinishS));
+            MP.RegisterSyncMethod(typeof(AnomalyQueue), nameof(AnomalyQueue.ReplaceMoreS));
+            MP.RegisterSyncMethod(typeof(AnomalyQueue), nameof(AnomalyQueue.Undo));
+            MP.RegisterSyncMethod(typeof(AnomalyQueue), nameof(AnomalyQueue.Redo));
             MP.RegisterSyncWorker<ResearchNode>(HandleResearchNode);
 
             Log.Message("Initialized compatibility for Multiplayer");
@@ -46,10 +55,13 @@ namespace ResearchPal
         {
             // Bind commands are in the order they are placed
             // So if you write a Def first, you must read it first and so on
-            if (sw.isWriting) {
+            if (sw.isWriting)
+            {
                 // We are writing, node is the outgoing object
                 sw.Bind(ref node.Research);
-            } else {
+            }
+            else
+            {
                 ResearchProjectDef research = null;
 
                 sw.Bind(ref research);

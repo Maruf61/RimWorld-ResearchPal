@@ -13,16 +13,16 @@ using static ResearchPal.Constants;
 
 namespace ResearchPal
 {
-    public class Queue : WorldComponent
+    public class AnomalyQueue : WorldComponent
     {
-        private static Queue _instance;
+        private static AnomalyQueue _instance;
         private readonly List<ResearchNode> _queue = new List<ResearchNode>();
         private List<ResearchProjectDef> _saveableQueue;
 
         private static UndoStateHandler<ResearchNode[]> undoState
             = new UndoStateHandler<ResearchNode[]>();
 
-        public Queue(World world) : base(world)
+        public AnomalyQueue(World world) : base(world)
         {
             _instance = this;
         }
@@ -36,9 +36,10 @@ namespace ResearchPal
 
         public static void DrawLabels(Rect visibleRect)
         {
-            Profiler.Start("Queue.DrawLabels");
+            Profiler.Start("AnomalyQueue.DrawLabels");
             var i = 1;
-            foreach (var node in _instance._queue)
+            foreach (var node in _instance._queue.Where(x =>
+                         x.Research.knowledgeCategory == KnowledgeCategoryDefOf.Basic))
             {
                 if (node.IsVisible(visibleRect))
                 {
@@ -48,6 +49,21 @@ namespace ResearchPal
                 }
 
                 i++;
+            }
+
+
+            var i2 = 1;
+            foreach (var node in _instance._queue.Where(x =>
+                         x.Research.knowledgeCategory == KnowledgeCategoryDefOf.Advanced))
+            {
+                if (node.IsVisible(visibleRect))
+                {
+                    var main = ColorCompleted[node.Research.techLevel];
+                    var background = i2 > 1 ? ColorUnavailable[node.Research.techLevel] : main;
+                    DrawLabel(node.QueueRect, main, background, i2);
+                }
+
+                i2++;
             }
 
             Profiler.End();
@@ -185,22 +201,50 @@ namespace ResearchPal
             }
         }
 
-        private ResearchProjectDef CurrentResearch()
+        private ResearchProjectDef CurrentBasicResearch()
         {
-            return _queue.FirstOrDefault()?.Research;
+            return _queue.FirstOrDefault(x => x.Research?.knowledgeCategory == KnowledgeCategoryDefOf.Basic)?.Research;
+        }
+
+        private ResearchProjectDef CurrentAdvancedResearch()
+        {
+            return _queue.FirstOrDefault(x => x.Research?.knowledgeCategory == KnowledgeCategoryDefOf.Advanced)
+                ?.Research;
         }
 
         private void UpdateCurrentResearch()
         {
-            var current = CurrentResearch();
-            if (current == null)
+            var currentBasic = CurrentBasicResearch();
+            if (currentBasic == null)
             {
-                Find.ResearchManager.StopProject(Find.ResearchManager.GetProject());
-                return;
+                if (GetCurrentBasicProject() != null)
+                    Find.ResearchManager.StopProject(GetCurrentBasicProject());
+            }
+            else
+            {
+                Find.ResearchManager.SetCurrentProject(currentBasic);
             }
 
+            var currentAdvanced = CurrentAdvancedResearch();
+            if (currentAdvanced == null)
+            {
+                if (GetCurrentAdvancedProject() != null)
+                    Find.ResearchManager.StopProject(GetCurrentAdvancedProject());
+            }
+            else
+            {
+                Find.ResearchManager.SetCurrentProject(currentAdvanced);
+            }
+        }
 
-            Find.ResearchManager.SetCurrentProject(CurrentResearch());
+        private static ResearchProjectDef GetCurrentBasicProject()
+        {
+            return Find.ResearchManager.GetProject(KnowledgeCategoryDefOf.Basic);
+        }
+
+        private static ResearchProjectDef GetCurrentAdvancedProject()
+        {
+            return Find.ResearchManager.GetProject(KnowledgeCategoryDefOf.Advanced);
         }
 
         static private void UpdateCurrentResearchS()
@@ -227,10 +271,17 @@ namespace ResearchPal
 
             finished.ForEach(n => _queue.Remove(n));
             unavailable.ForEach(n => Remove(n));
-            var cur = Find.ResearchManager.GetProject();
-            if (cur != null && cur != CurrentResearch())
+
+            var curBasic = GetCurrentBasicProject();
+            var curAdvanced = GetCurrentAdvancedProject();
+            if (curBasic != null && curBasic != CurrentBasicResearch())
             {
-                Replace(Find.ResearchManager.GetProject().ResearchNode());
+                Replace(curBasic.ResearchNode());
+            }
+
+            if (curAdvanced != null && curAdvanced != CurrentAdvancedResearch())
+            {
+                Replace(curAdvanced.ResearchNode());
             }
 
             UpdateCurrentResearch();
@@ -266,17 +317,6 @@ namespace ResearchPal
                 UpdateCurrentResearch();
             }
 
-            return true;
-        }
-
-        static public bool ReplaceAnomaly(ResearchNode node)
-        {
-            if (CantResearch(node))
-            {
-                return false;
-            }
-
-            Find.ResearchManager.SetCurrentProject(node.Research);
             return true;
         }
 
@@ -388,7 +428,7 @@ namespace ResearchPal
 
         static public void NewUndoState()
         {
-            var q = Queue._instance;
+            var q = AnomalyQueue._instance;
             var s = q._queue.ToArray();
             Log.Debug("Undo state recorded: {0}", DebugQueueSerialize(s));
             undoState.NewState(s);
@@ -485,7 +525,7 @@ namespace ResearchPal
             if (Scribe.mode == LoadSaveMode.Saving)
                 _saveableQueue = _queue.Select(node => node.Research).ToList();
 
-            Scribe_Collections.Look(ref _saveableQueue, "Queue", LookMode.Def);
+            Scribe_Collections.Look(ref _saveableQueue, "AnomalyQueue", LookMode.Def);
 
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
@@ -605,8 +645,6 @@ namespace ResearchPal
 
         private static void ReleaseNodeAt(ResearchNode node, int dropIdx)
         {
-            if (node.Research.knowledgeCategory != null) return; //Skip If Anomaly
-
             if (dropIdx == -1)
             {
                 RemoveS(node);
@@ -867,7 +905,7 @@ namespace ResearchPal
         static private void DrawBackground(Rect baseCanvas)
         {
             GUI.color = new Color(0.3f, 0.3f, 0.3f, 0.8f);
-            GUI.DrawTexture(baseCanvas, BaseContent.GreyTex);
+            GUI.DrawTexture(baseCanvas, Assets.RedBackground); //BaseContent.GreyTex);
         }
 
         static private Rect CanvasFromBaseCanvas(Rect baseCanvas)
@@ -918,10 +956,9 @@ namespace ResearchPal
             }
         }
 
-        static public void DrawS(Rect baseCanvas, bool isAnomaly = false)
+        static public void DrawS(Rect baseCanvas, bool interactible)
         {
             DrawBackground(baseCanvas);
-
             HandleUndo();
             var canvas = CanvasFromBaseCanvas(baseCanvas);
 
@@ -933,22 +970,18 @@ namespace ResearchPal
                 Text.Anchor = TextAnchor.UpperLeft;
             }
 
-            if (!isAnomaly)
-                HandleReleaseOutside(canvas);
+            HandleReleaseOutside(canvas);
             HandleScroll(canvas);
 
 
             _scroll_pos = GUI.BeginScrollView(
                 canvas, _scroll_pos, ViewRect(canvas), GUIStyle.none, GUIStyle.none);
-            Profiler.Start("Queue.DrawQueue");
+            Profiler.Start("AnomalyQueue.DrawQueue");
 
 
             var visibleRect = VisibleRect(canvas);
-            if (!isAnomaly)
-            {
-                HandleDragReleaseInside(visibleRect);
-                UpdateCurrentPosition(visibleRect);
-            }
+            HandleDragReleaseInside(visibleRect);
+            UpdateCurrentPosition(visibleRect);
 
             DrawNodes(visibleRect);
 
